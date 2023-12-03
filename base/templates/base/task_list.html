@@ -1,11 +1,45 @@
 {% extends 'base/main.html' %} {% block content %}
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
 <div class="header-bar">
+    {% if tasks|length > count %}
     <div>
         <h1>Hello {{request.user|title}}</h1>
-        <h3 style="margin:0">You have <i>{{count}}</i> incomplete task{{ count|pluralize:"s" }}</h3>
+        <h3 style="margin:0">Congratulations on completing a task!</h3>
+        <h4>Celebrating the small wins in your life can help build motivation and reduce stress, so make sure to give yourself a pat on the back.</h4>
     </div>
+    {% endif %}
+
+    {% if count == tasks|length%}
+    {% if 4 > tasks|length  %}
+    <div>
+        <h1>Hello {{request.user|title}}</h1>
+        <h3 style="margin:0">You have <i>{{count}}</i> task{{ count|pluralize:"s" }} to focus on today.</h3>
+    </div>
+    {% endif %}
+
+    {% if  tasks|length > 3   %}
+    {% if  5 > tasks|length   %}
+    <div>
+        <h1>Hello {{request.user|title}}</h1>
+        <h3>You seem to have a lot of tasks on your plate today!</h3>
+        <h4>It's okay to have a lot going on, but make sure to go easy on yourself today. Make sure to eat, drink, and take breaks. It's okay if not everything gets done.</h4>
+
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {% if  tasks|length >= 5  %}
+    <div>
+        <h1>Hello {{request.user|title}}</h1>
+        <h3>You seem to be very busy very frequently!</h3>
+        <h4>It's okay to have busy days, but if you're feeling overwhelmed, it's worth it to find ways to lighten your workload. Over-committing will actually make you less happy and less productive in the long run.</h4>
+        <h4>Even if you feel like you can't, try reaching out to a trusted friend, mentor or mental health professional. They may be able to help.</h4>
+
+    </div>
+    {% endif %}
+    {% endif %}
 
     {% if request.user.is_authenticated %}
     <a href="{% url 'logout' %}">Logout</a> {% else %}
@@ -14,12 +48,10 @@
 
 
 <div id="search-add-wrapper">
-    <form method="GET" style="display: flex;">
-        <input type='text' name='search-area' placeholder="Search your task" value="{{search_input}}">
-        <input class="button" type="submit" value='Search'>
-    </form>
-    {% if tasks|length > 0 %}
+
+    {% if tasks|length >= 0 %}
     <a id="add-link" href="{% url 'task-create' %}">&#x2b;</a>
+    <a href="{% url 'view-all-tasks' %}">All Tasks</a>
     {% endif %}
 </div>
 
@@ -32,27 +64,27 @@
 
 
 <div id="tasklist" class="task-items-wrapper">
-    {% for task in tasks %}
-    <div class="task-wrapper" data-position="{{task.pk}}">
-        <div class="task-title">
-            {% if task.complete %}
-            <div class="task-complete-icon"></div>
-            <i><s><a href="{% url 'task-update' task.id %}">{{task}}</a></s></i> {% else %}
-            <div class="task-incomplete-icon"></div>
-            <a href="{% url 'task-update' task.id %}">{{task}}</a> {% endif %}
-        </div>
-        <div class="task-controls">
-            <a class="delete-link" href="{% url 'task-delete' task.id %}">&#215;</a>
-            <span class="handle">&nbsp;&#10247;</span>
-        </div>
-    </div>
 
-    {% empty %}
-    <div style="text-align: center; padding-bottom: 10px; line-height: 1em;">
-        <h3>No new tasks are created.</h3>
-        <h3>Create a <a style="text-decoration: none; color: #e53935;" href="{% url 'task-create' %}">New task</a> ! </h3>
-    </div>
-    {% endfor %}
+        {% for task in tasks %}
+        <div class="task-wrapper" data-position="{{task.pk}}">
+            <div class="task-title">
+                {% if task.complete %}
+                <div class="task-complete-icon"></div>
+                <i><s><a href="{% url 'task-update' task.id %}">{{task}}</a></s></i> {% else %}
+                <div class="task-incomplete-icon"></div>
+                <a href="{% url 'task-update' task.id %}">{{task}}</a> {% endif %}
+            </div>
+            <div class="task-controls">
+                <a class="delete-link" href="{% url 'task-delete' task.id %}">&#215;</a>
+                <span class="handle">&nbsp;&#10247;</span>
+            </div>
+        </div>
+
+        {% empty %}
+        <div style="text-align: center; padding-bottom: 10px; line-height: 1em;">
+
+        </div>
+        {% endfor %}
 </div>
 
 <script>
@@ -70,8 +102,9 @@
     function reordering() {
         const rows = document.getElementsByClassName("task-wrapper");
         let pos = [];
+        let maxv = 0;
         for (let row of rows) {
-            pos.push(row.dataset.position);
+                pos.push(row.dataset.position);
         }
         console.log(pos.join(","))
         positionInput.value = pos.join(',');

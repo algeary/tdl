@@ -16,6 +16,7 @@ from django.db import transaction
 
 from .models import Task
 from .forms import PositionForm
+from .send_emails_code import send_email_notifications_with_model
 
 
 class CustomLoginView(LoginView):
@@ -47,19 +48,25 @@ class RegisterPage(FormView):
 
 class TaskList(LoginRequiredMixin, ListView):
     model = Task
+    context_object_name = 'tasks' 
+    send_email_notifications_with_model()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tasks'] = context['tasks'].filter(user=self.request.user).filter(priority_level=1)
+        context['count'] = context['tasks'].filter(complete=False).count()
+        return context
+    
+class AllTasksList(LoginRequiredMixin, ListView):
+    model = Task
     context_object_name = 'tasks'
+    template_name = 'base/all_tasks.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['tasks'] = context['tasks'].filter(user=self.request.user)
         context['count'] = context['tasks'].filter(complete=False).count()
-
-        search_input = self.request.GET.get('search-area') or ''
-        if search_input:
-            context['tasks'] = context['tasks'].filter(
-                title__contains=search_input)
-
-        context['search_input'] = search_input
+        # context['completed_count'] = context['tasks'].filter(complete=True).count()
 
         return context
 
@@ -72,7 +79,7 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 
 class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
-    fields = ['title', 'description', 'complete']
+    fields = ['title', 'description', 'priority_level', 'due_date', 'complete']
     success_url = reverse_lazy('tasks')
 
     def form_valid(self, form):
@@ -82,7 +89,7 @@ class TaskCreate(LoginRequiredMixin, CreateView):
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
-    fields = ['title', 'description', 'complete']
+    fields = ['title', 'description', 'priority_level', 'due_date', 'complete']
     success_url = reverse_lazy('tasks')
 
 

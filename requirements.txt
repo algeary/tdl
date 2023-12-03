@@ -4,3 +4,6 @@ Pillow
 sqlparse
 typing_extensions
 tzdata
+pandas
+requests
+datetime
