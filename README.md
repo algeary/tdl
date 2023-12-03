@@ -1,6 +1,6 @@
 
    To run a local version of the code, run the following commands from your terminal:
-   '''python -m venv venv
+   ```python -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
    docker run -p 8080:8080 -e hapi.fhir.default_encoding=xml hapiproject/hapi:latest'''
