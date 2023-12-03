@@ -11,10 +11,10 @@ def populate_dummy_data():
 
     patient_json = """{
         "resourceType": "Patient",
-        "id": "2",
+        "id": "1",
         "active": true,
         "name": [
-            {6
+            {
                 "use": "official",
                 "family": "Bo",
                 "given": [
@@ -73,7 +73,7 @@ def populate_dummy_data():
             "text" : "Anxiety"
         },
         "subject" : {
-            "reference" : "Patient/2"
+            "reference" : "Patient/1"
         },
         "onsetDateTime" : "2022-05-24"
         }"""
@@ -111,7 +111,7 @@ def populate_dummy_data():
             "text": "Zoloft 75mg"
         },
         "subject": {
-            "reference": "Patient/2"
+            "reference": "Patient/1"
         },
         "authoredOn": "2022-04-05",
         "dosageInstruction": [
@@ -149,7 +149,7 @@ def populate_dummy_data():
 
 def pull_patient():
     # pull patient
-    url = 'http://localhost:8080/fhir/Patient/2'
+    url = 'http://localhost:8080/fhir/Patient/1'
     session = requests.Session()
     headers = {"content-type": "application/json"}
     response = session.get(url, headers=headers, verify=False)
@@ -158,7 +158,7 @@ def pull_patient():
 
 def pull_diagnosis():
     # pull diagnosis
-    url = 'http://localhost:8080/fhir/Condition?subject=2'
+    url = 'http://localhost:8080/fhir/Condition?subject=1'
     session = requests.Session()
     headers = {"content-type": "application/json"}
     response = session.get(url, headers=headers, verify=False)
@@ -168,7 +168,7 @@ def pull_diagnosis():
 
 def pull_medication():
     # pull medication
-    url = 'http://localhost:8080/fhir/MedicationRequest?subject=2'
+    url = 'http://localhost:8080/fhir/MedicationRequest?subject=1'
     session = requests.Session()
     headers = {"content-type": "application/json"}
     response = session.get(url, headers=headers, verify=False)
